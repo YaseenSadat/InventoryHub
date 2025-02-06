@@ -339,11 +339,11 @@ cache_initialized = False
 def init_cache_once():
     global cache_initialized
     if not cache_initialized:
-        from inventory_cache import initialize_structures
+        from .inventory_cache import initialize_structures
+        init_db()
         initialize_structures()
         cache_initialized = True
 
     
 if __name__ == '__main__':
-    init_db()
     app.run(debug=True)
