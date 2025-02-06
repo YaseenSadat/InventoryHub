@@ -1,0 +1,30 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "build InMemoryDB",
+        "type": "shell",
+        "command": "gcc",
+        "args": [
+          "-g",                           // Include debugging information
+          "main.c",
+          "db.c",
+          "hashmap.c",
+          "btree.c",
+          "query_parser.c",
+          "sqlite3.c",                    // Include SQLite source file
+          "-o",
+          "InMemoryDB",               // On Linux/macOS, you might call this "InMemoryDB"
+          "-I", "."
+        ],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        },
+        "problemMatcher": [
+          "$gcc"
+        ]
+      }
+    ]
+  }
+  

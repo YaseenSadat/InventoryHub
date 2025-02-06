@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Add Record{% endblock %}
+{% block content %}
+  <h1 class="mb-4">Add a New Record</h1>
+  <form method="post">
+    <div class="mb-3">
+      <label for="id" class="form-label">ID</label>
+      <input type="number" class="form-control" id="id" name="id" required>
+    </div>
+    <div class="mb-3">
+      <label for="data" class="form-label">Data</label>
+      <input type="text" class="form-control" id="data" name="data" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Add Record</button>
+    <a href="{{ url_for('index') }}" class="btn btn-secondary">Cancel</a>
+  </form>
+{% endblock %}
