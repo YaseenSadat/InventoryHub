@@ -81,5 +81,5 @@ Unlike conventional inventory systems, InventoryHub uniquely integrates a custom
 ### Tools  
 - **SQLite**: A lightweight, file-based database used for persistent storage of user and inventory data.- **Stripe**: Processes payments securely, including service fee handling. Serves as the core database system, managing data for users and inventory items with simplicity and efficiency.
 - **Git**: Version control system used to track code changes and facilitate collaboration.
-
+- **Docker**: Ensures consistent environments and smooth deployments via containerization.  
 ---
