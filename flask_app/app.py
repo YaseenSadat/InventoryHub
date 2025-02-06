@@ -270,7 +270,7 @@ def add_item():
 
                 return redirect(url_for('inventory'))
             except Exception as e:
-                flash('Error adding item: ' + str(e))
+                flash('')
     return render_template('add_item.html')
 
 
