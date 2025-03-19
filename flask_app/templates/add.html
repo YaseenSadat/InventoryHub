@@ -1,17 +1,43 @@
+{# 
+  add_record.html 
+
+  Template for adding a new record.
+
+  This page provides a form where users can input an ID and associated data
+  to create a new record in the system.
+
+  Features:
+  - Uses Bootstrap for responsive styling.
+  - Includes form validation (`required` attributes) to ensure inputs are not empty.
+  - Provides a cancel button that redirects back to the main page.
+#}
+
 {% extends "base.html" %}
+
+{# Page title displayed in the browser tab #}
 {% block title %}Add Record{% endblock %}
+
 {% block content %}
   <h1 class="mb-4">Add a New Record</h1>
+
+  {# Form for adding a new record #}
   <form method="post">
+
+    {# ID Input Field (Required) #}
     <div class="mb-3">
       <label for="id" class="form-label">ID</label>
       <input type="number" class="form-control" id="id" name="id" required>
     </div>
+
+    {# Data Input Field (Required) #}
     <div class="mb-3">
       <label for="data" class="form-label">Data</label>
       <input type="text" class="form-control" id="data" name="data" required>
     </div>
+
+    {# Submit and Cancel Buttons #}
     <button type="submit" class="btn btn-primary">Add Record</button>
     <a href="{{ url_for('index') }}" class="btn btn-secondary">Cancel</a>
+
   </form>
 {% endblock %}

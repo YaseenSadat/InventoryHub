@@ -1,29 +1,61 @@
+{# 
+  add_item.html 
+
+  Template for adding a new inventory item.
+
+  This page provides a form where users can enter details about a new inventory item.
+  The form includes fields for the item name, description, quantity, price, and supplier.
+
+  Features:
+  - Uses Bootstrap for styling.
+  - Includes form validation with `required` attributes.
+  - Provides a cancel button that redirects back to the inventory page.
+#}
+
 {% extends "base.html" %}
+
+{# Page title displayed in the browser tab #}
 {% block title %}Add Item{% endblock %}
+
 {% block content %}
   <h1 class="mb-4">Add New Item</h1>
+
+  {# Form for adding a new inventory item #}
   <form method="post">
+
+    {# Item Name Input Field #}
     <div class="mb-3">
       <label for="name" class="form-label">Item Name</label>
       <input type="text" class="form-control" id="name" name="name" required>
     </div>
+
+    {# Description Input Field (Optional) #}
     <div class="mb-3">
       <label for="description" class="form-label">Description</label>
       <textarea class="form-control" id="description" name="description"></textarea>
     </div>
+
+    {# Quantity Input Field (Required) #}
     <div class="mb-3">
       <label for="quantity" class="form-label">Quantity</label>
       <input type="number" class="form-control" id="quantity" name="quantity" required>
     </div>
+
+    {# Price Input Field (Required, Allows Decimals) #}
     <div class="mb-3">
       <label for="price" class="form-label">Price</label>
       <input type="number" step="0.01" class="form-control" id="price" name="price" required>
     </div>
+
+    {# Supplier Input Field (Optional) #}
     <div class="mb-3">
       <label for="supplier" class="form-label">Supplier</label>
       <input type="text" class="form-control" id="supplier" name="supplier">
     </div>
+
+    {# Submit and Cancel Buttons #}
     <button type="submit" class="btn btn-primary">Add Item</button>
     <a href="{{ url_for('inventory') }}" class="btn btn-secondary">Cancel</a>
+
   </form>
 {% endblock %}
