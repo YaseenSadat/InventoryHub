@@ -1,13 +1,36 @@
+{# 
+  update_record.html 
+
+  This template provides a form for updating an existing record.
+
+  Features:
+  - Displays the current data value of the record in an editable form.
+  - Ensures required fields are validated before submission.
+  - Allows users to update the record's data field.
+  - Includes a cancel button to navigate back to the main page.
+  - Uses Bootstrap for styling and responsive layout.
+#}
+
 {% extends "base.html" %}
+
+{# Page title #}
 {% block title %}Update Record{% endblock %}
+
 {% block content %}
   <h1 class="mb-4">Update Record {{ record['id'] }}</h1>
+
+  {# Update Record Form #}
   <form method="post">
+
+    {# Data Input Field (Required) #}
     <div class="mb-3">
       <label for="data" class="form-label">Data</label>
       <input type="text" class="form-control" id="data" name="data" value="{{ record['data'] }}" required>
     </div>
+
+    {# Submit and Cancel Buttons #}
     <button type="submit" class="btn btn-primary">Update Record</button>
     <a href="{{ url_for('index') }}" class="btn btn-secondary">Cancel</a>
+
   </form>
 {% endblock %}

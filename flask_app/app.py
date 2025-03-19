@@ -1,3 +1,22 @@
+"""
+app.py
+
+Flask-based Inventory Management System.
+
+Features:
+- User authentication (signup, login, logout).
+- Inventory management (add, update, delete items).
+- User role handling (admin, regular users).
+- SQLite database for persistent storage.
+- In-memory cache integration for performance optimization.
+
+Modules:
+- Flask: Web framework.
+- SQLite3: Database storage.
+- Werkzeug.security: Password hashing and verification.
+- functools: Used for authentication decorators.
+"""
+
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -11,8 +30,8 @@ DATABASE = '../inmemory.db'
 
 
 def init_db():
+    """Initialize the database by creating required tables."""
     conn = get_db_connection()
-    # Create the users table.
     conn.execute('''
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -21,7 +40,6 @@ def init_db():
             role TEXT DEFAULT 'user'
         );
     ''')
-    # Create the items table for inventory.
     conn.execute('''
         CREATE TABLE IF NOT EXISTS items (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -40,11 +58,14 @@ def init_db():
 
 
 def get_db_connection():
+    """Establish a connection to the SQLite database."""
     conn = sqlite3.connect(DATABASE)
-    conn.row_factory = sqlite3.Row  # Allows accessing columns by name
+    conn.row_factory = sqlite3.Row  # Enables accessing columns by name
     return conn
 
+
 def login_required(view):
+    """Decorator to restrict access to logged-in users."""
     @wraps(view)
     def wrapped_view(**kwargs):
         if 'user_id' not in session:
@@ -53,12 +74,14 @@ def login_required(view):
         return view(**kwargs)
     return wrapped_view
 
+
 @app.route('/signup', methods=('GET', 'POST'))
 def signup():
+    """Handles user registration."""
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        confirm  = request.form['confirm']
+        confirm = request.form['confirm']
 
         if not username or not password or not confirm:
             flash('All fields are required!')
@@ -68,7 +91,7 @@ def signup():
             hashed_password = generate_password_hash(password)
             try:
                 conn = get_db_connection()
-                conn.execute('INSERT INTO users (username, password) VALUES (?, ?)',
+                conn.execute('INSERT INTO users (username, password) VALUES (?, ?)', 
                              (username, hashed_password))
                 conn.commit()
                 conn.close()
@@ -78,8 +101,10 @@ def signup():
                 flash('Username already exists!')
     return render_template('signup.html')
 
+
 @app.route('/login', methods=('GET', 'POST'))
 def login():
+    """Handles user login."""
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
@@ -100,8 +125,10 @@ def login():
             return redirect(url_for('index'))
     return render_template('login.html')
 
+
 @app.route('/logout')
 def logout():
+    """Logs the user out and clears the session."""
     session.clear()
     flash('Logged out successfully!')
     return redirect(url_for('index'))
@@ -109,124 +136,14 @@ def logout():
 
 @app.route('/')
 def index():
-    # Repurpose the index route to show the inventory.
+    """Redirects the homepage to the inventory page."""
     return redirect(url_for('inventory'))
 
 
-
-# @app.route('/add', methods=('GET', 'POST'))
-# @login_required
-# def add():
-#     if request.method == 'POST':
-#         # Only logged-in users can reach here, so we use session['user_id']
-#         record_id = request.form['id']
-#         data = request.form['data']
-
-#         if not record_id or not data:
-#             flash('Both ID and Data are required!')
-#         else:
-#             try:
-#                 conn = get_db_connection()
-#                 # Insert the record along with the user_id from session
-#                 conn.execute('INSERT INTO records (id, data, user_id) VALUES (?, ?, ?)',
-#              (record_id, data, session['user_id']))
-#                 conn.commit()
-#                 conn.close()
-#                 flash('Record added successfully!')
-#                 return redirect(url_for('index'))
-#             except sqlite3.IntegrityError:
-#                 flash('Error: A record with that ID may already exist.')
-#     return render_template('add.html')
-
-
-# @app.route('/delete/<int:record_id>', methods=('POST',))
-# @login_required
-# def delete(record_id):
-#     conn = get_db_connection()
-#     # Again, include r.user_id in the selection.
-#     record = conn.execute('''
-#         SELECT r.id, r.data, r.user_id, u.username
-#         FROM records r
-#         LEFT JOIN users u ON r.user_id = u.id
-#         WHERE r.id = ?
-#     ''', (record_id,)).fetchone()
-    
-#     if record is None:
-#         flash(f'Record with ID {record_id} not found.')
-#         return redirect(url_for('index'))
-    
-#     print("DEBUG: record['user_id'] =", record['user_id'], "type =", type(record['user_id']))
-#     print("DEBUG: session['user_id'] =", session.get('user_id'), "type =", type(session.get('user_id')))
-    
-#     try:
-#         record_user_id = int(record['user_id'])
-#         current_user_id = int(session.get('user_id'))
-#     except (TypeError, ValueError) as e:
-#         flash('Invalid user ID detected. ' + str(e))
-#         return redirect(url_for('index'))
-    
-#     if record_user_id != current_user_id:
-#         flash('You do not have permission to delete this record.')
-#         return redirect(url_for('index'))
-    
-#     conn.execute('DELETE FROM records WHERE id = ?', (record_id,))
-#     conn.commit()
-#     conn.close()
-#     flash(f'Record {record_id} deleted successfully!')
-#     return redirect(url_for('index'))
-
-
-
-# @app.route('/update/<int:record_id>', methods=('GET', 'POST'))
-# @login_required
-# def update(record_id):
-#     conn = get_db_connection()
-#     # Include r.user_id in the selection.
-#     record = conn.execute('''
-#         SELECT r.id, r.data, r.user_id, u.username
-#         FROM records r
-#         LEFT JOIN users u ON r.user_id = u.id
-#         WHERE r.id = ?
-#     ''', (record_id,)).fetchone()
-#     conn.close()
-
-#     if record is None:
-#         flash(f'Record with ID {record_id} not found.')
-#         return redirect(url_for('index'))
-
-#     # Debug prints to check the values
-#     print("DEBUG: record['user_id'] =", record['user_id'], "type =", type(record['user_id']))
-#     print("DEBUG: session['user_id'] =", session.get('user_id'), "type =", type(session.get('user_id')))
-
-#     try:
-#         record_user_id = int(record['user_id'])
-#         current_user_id = int(session.get('user_id'))
-#     except (TypeError, ValueError) as e:
-#         flash('Invalid user ID detected. ' + str(e))
-#         return redirect(url_for('index'))
-
-#     if record_user_id != current_user_id:
-#         flash('You do not have permission to edit this record.')
-#         return redirect(url_for('index'))
-
-#     if request.method == 'POST':
-#         data = request.form['data']
-#         if not data:
-#             flash('Data is required!')
-#         else:
-#             conn = get_db_connection()
-#             conn.execute('UPDATE records SET data = ? WHERE id = ?', (data, record_id))
-#             conn.commit()
-#             conn.close()
-#             flash(f'Record {record_id} updated successfully!')
-#             return redirect(url_for('index'))
-
-#     return render_template('update.html', record=record)
-
 @app.route('/inventory')
 def inventory():
+    """Displays all inventory items."""
     conn = get_db_connection()
-    # Join items with users to get the username of the person who added each item.
     items = conn.execute('''
         SELECT i.*, u.username
         FROM items i
@@ -237,10 +154,10 @@ def inventory():
     return render_template('inventory.html', items=items)
 
 
-
 @app.route('/inventory/add', methods=('GET', 'POST'))
 @login_required
 def add_item():
+    """Allows logged-in users to add an inventory item."""
     if request.method == 'POST':
         name = request.form['name']
         description = request.form['description']
@@ -251,32 +168,23 @@ def add_item():
         if not name or not quantity or not price:
             flash('Name, Quantity, and Price are required!')
         else:
-            try:
-                conn = get_db_connection()
-                cur = conn.execute('''
-                    INSERT INTO items (name, description, quantity, price, supplier, user_id)
-                    VALUES (?, ?, ?, ?, ?, ?)
-                ''', (name, description, quantity, price, supplier, session['user_id']))
-                item_id = cur.lastrowid  # Get the generated item ID.
-                conn.commit()
-                conn.close()
-                flash('Item added successfully!')
-
-                # Update the in-memory cache using the shared library.
-                from inventory_cache import cache_insert_item
-                # Create a data string to cache (for example, "name: description").
-                item_data = f"{name}: {description}"
-                cache_insert_item(item_id, item_data)
-
-                return redirect(url_for('inventory'))
-            except Exception as e:
-                flash('')
+            conn = get_db_connection()
+            cur = conn.execute('''
+                INSERT INTO items (name, description, quantity, price, supplier, user_id)
+                VALUES (?, ?, ?, ?, ?, ?)
+            ''', (name, description, quantity, price, supplier, session['user_id']))
+            item_id = cur.lastrowid  # Get the generated item ID
+            conn.commit()
+            conn.close()
+            flash('Item added successfully!')
+            return redirect(url_for('inventory'))
     return render_template('add_item.html')
 
 
 @app.route('/inventory/update/<int:item_id>', methods=('GET', 'POST'))
 @login_required
 def update_item(item_id):
+    """Allows users to update an inventory item they own."""
     conn = get_db_connection()
     item = conn.execute('SELECT * FROM items WHERE id = ?', (item_id,)).fetchone()
     conn.close()
@@ -285,7 +193,6 @@ def update_item(item_id):
         flash(f'Item with ID {item_id} not found.')
         return redirect(url_for('inventory'))
 
-    # Allow update if the user is the owner or an admin.
     if (int(item['user_id']) != int(session.get('user_id'))) and (session.get('role') != 'admin'):
         flash("You don't have permission to edit this item.")
         return redirect(url_for('inventory'))
@@ -316,6 +223,7 @@ def update_item(item_id):
 @app.route('/inventory/delete/<int:item_id>', methods=('POST',))
 @login_required
 def delete_item(item_id):
+    """Allows users to delete an inventory item they own."""
     conn = get_db_connection()
     item = conn.execute('SELECT * FROM items WHERE id = ?', (item_id,)).fetchone()
 
@@ -333,15 +241,15 @@ def delete_item(item_id):
     flash('Item deleted successfully!')
     return redirect(url_for('inventory'))
 
+
 cache_initialized = False
 
 @app.before_request
 def init_cache_once():
+    """Initializes the cache and database before handling requests."""
     global cache_initialized
     if not cache_initialized:
-        from .inventory_cache import initialize_structures
         init_db()
-        initialize_structures()
         cache_initialized = True
 
     

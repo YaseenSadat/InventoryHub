@@ -1,29 +1,60 @@
+{# 
+  update_item.html 
+
+  This template provides a form for updating an existing inventory item.
+
+  Features:
+  - Displays the current values of the item in an editable form.
+  - Ensures required fields are validated before submission.
+  - Allows users to update item details such as name, description, quantity, price, and supplier.
+  - Includes a cancel button to navigate back to the inventory page.
+  - Uses Bootstrap for styling and responsive layout.
+#}
+
 {% extends "base.html" %}
+
+{# Page title #}
 {% block title %}Update Item{% endblock %}
+
 {% block content %}
   <h1 class="mb-4">Update Item: {{ item['name'] }}</h1>
+
+  {# Update Item Form #}
   <form method="post">
+
+    {# Item Name Input Field (Required) #}
     <div class="mb-3">
       <label for="name" class="form-label">Item Name</label>
       <input type="text" class="form-control" id="name" name="name" value="{{ item['name'] }}" required>
     </div>
+
+    {# Description Input Field (Optional) #}
     <div class="mb-3">
       <label for="description" class="form-label">Description</label>
       <textarea class="form-control" id="description" name="description">{{ item['description'] }}</textarea>
     </div>
+
+    {# Quantity Input Field (Required) #}
     <div class="mb-3">
       <label for="quantity" class="form-label">Quantity</label>
       <input type="number" class="form-control" id="quantity" name="quantity" value="{{ item['quantity'] }}" required>
     </div>
+
+    {# Price Input Field (Required, Allows Decimals) #}
     <div class="mb-3">
       <label for="price" class="form-label">Price</label>
       <input type="number" step="0.01" class="form-control" id="price" name="price" value="{{ item['price'] }}" required>
     </div>
+
+    {# Supplier Input Field (Optional) #}
     <div class="mb-3">
       <label for="supplier" class="form-label">Supplier</label>
       <input type="text" class="form-control" id="supplier" name="supplier" value="{{ item['supplier'] }}">
     </div>
+
+    {# Submit and Cancel Buttons #}
     <button type="submit" class="btn btn-primary">Update Item</button>
     <a href="{{ url_for('inventory') }}" class="btn btn-secondary">Cancel</a>
+
   </form>
 {% endblock %}

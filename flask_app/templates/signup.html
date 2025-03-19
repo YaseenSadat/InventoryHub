@@ -1,22 +1,47 @@
+{# 
+  signup.html 
+
+  This template provides a sign-up form for new user registration.
+
+  Features:
+  - Users can enter a username, password, and confirm their password.
+  - Form validation ensures all fields are required.
+  - A link is provided to the login page for returning users.
+  - Bootstrap is used for styling and a responsive layout.
+#}
+
 {% extends "base.html" %}
+
+{# Page title #}
 {% block title %}Sign Up{% endblock %}
+
 {% block content %}
 <div class="row justify-content-center">
   <div class="col-md-6">
     <h1 class="mb-4">Sign Up</h1>
+
+    {# Sign-Up Form #}
     <form method="post">
+      
+      {# Username Input Field (Required) #}
       <div class="mb-3">
         <label for="username" class="form-label">Username</label>
         <input type="text" class="form-control" id="username" name="username" required>
       </div>
+
+      {# Password Input Field (Required) #}
       <div class="mb-3">
         <label for="password" class="form-label">Password</label>
         <input type="password" class="form-control" id="password" name="password" required>
       </div>
+
+      {# Confirm Password Input Field (Required) #}
       <div class="mb-3">
         <label for="confirm" class="form-label">Confirm Password</label>
         <input type="password" class="form-control" id="confirm" name="confirm" required>
       </div>
+
+      {# Submit and Login Link #}
       <button type="submit" class="btn btn-primary">Sign Up</button>
       <a href="{{ url_for('login') }}" class="btn btn-link">Already have an account? Log In</a>
     </form>
